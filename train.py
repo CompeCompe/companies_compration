@@ -13,16 +13,15 @@ from pipe import Pipe, DataPreparing
 
 data = pd.read_csv(Path(r"data/train.csv"))
 
-pipe_pre = Pipe(
+clear_via_pipe = Pipe(
     DataPreparing.remove_countries(),
     DataPreparing.remove_abbreviation()
 )
 
 # clearing data
-data['name_1'] = pipe_pre(data['name_1'].astype('str'))
-data['name_2'] = pipe_pre(data['name_2'].astype('str'))
-data['is_duplicate'] = data['is_duplicate'].fillna(0)
-data['is_duplicate'] = data['is_duplicate'].astype('int')
+data['name_1'] = clear_via_pipe(data['name_1'].astype('str'))
+data['name_2'] = clear_via_pipe(data['name_2'].astype('str'))
+data['is_duplicate'] = data['is_duplicate'].fillna(0).astype('int')
 data['full_name'] = data['name_1'] + ' ' + data['name_2']
 
 
@@ -38,6 +37,7 @@ tuned_parameters = {"C": np.logspace(-2, 2, 10)}
 
 best_logreg = GridSearchCV(logreg, param_grid=tuned_parameters, scoring='roc_auc',
                            cv=5, n_jobs=-1).fit(features_train, target_train)
-
+full_df = features_train
 pickle.dump(count_tf_idf, open("data/tfidf.pickle", "wb"))
+full_df.to_hdf(Path(r"data/full_df.h5"), key="df", mode="w", index=False)
 dump(best_logreg, Path(r"data/logit.joblib", sep=";"))
