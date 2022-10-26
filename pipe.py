@@ -31,7 +31,7 @@ class DataPreparing:
 
     @for_pipeline
     def remove_abbreviation(s: str) -> str:
-        # сокращения компаний
+        # delete short words comp
         companies = ['ltd', 'ltda', 'saic', 's', 'a', 'i', 'c', 'co', 'ag', 'r', 'o',
                      'p', 'group', 'inc', 'sp', 'ооо', 'зао', 'ncr', 'cv', 'limited',
                      'sa', 'spa', 'pte', 'pvt', 'gmbh', 'nv', 'imp', 'corp', 'pt',
