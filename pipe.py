@@ -47,7 +47,7 @@ class DataPreparing:
                      'ответственностью', 'ieo', 'cie', 'k', 'e', 'ind', 'рус', 'ао',
                      'лтд', 'cs', 'industrial', 'se', 'через', 'терминал', 'в']
         s = s.lower()
-        s = re.sub(r'[\W\d]', ' ', s)  # r'[^a-z]'
+        s = re.sub(r'[\W\d]', ' ', s)
         s = s.split()
         for i in range(len(s)):
             if s[i] in companies:
