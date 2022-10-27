@@ -13,19 +13,19 @@ from pipe import Pipe, DataPreparing
 
 def search_accuracy(predict_proba, k):
     '''
-    впиндюрить эту функцию в вывод
+    Calculate accuracy of search, formula given by mentor
     '''
-    temp_list = predict_proba.argsort()
-    temp_list = temp_list[-k:]
-    temp_list = temp_list[::-1]
+    top_comp_index = predict_proba.argsort()
+    top_comp_index = top_comp_index[-k:]
+    top_comp_index = top_comp_index[::-1]
 
     if predict_proba[predict_proba > 0.75].size >= 1:
-        weights_1 = [(-0.2*x + 1) for x in range(len(temp_list))]
-        answer = min(((weights_1 * predict_proba[temp_list]).sum()), 1)
+        weights_1 = [(-0.2*x + 1) for x in range(len(top_comp_index))]
+        answer = min(((weights_1 * predict_proba[top_comp_index]).sum()), 1)
     
     elif predict_proba[predict_proba > 0.75].size == 0:
-        weights_2 = [0.2*x for x in range(len(temp_list))]
-        answer = max((1 - (weights_2 * predict_proba[temp_list]).sum()), 0)
+        weights_2 = [0.2*x for x in range(len(top_comp_index))]
+        answer = max((1 - (weights_2 * predict_proba[top_comp_index]).sum()), 0)
 
     return answer
 
@@ -67,16 +67,17 @@ def main():
         try:
             start_time = time.time()
             top_comp, predict_proba = rank(comp_name, k, full_df, data, logit, clear_via_pipe)
-            time_1 = time.time() - start_time 
+            time_1 = time.time() - start_time
+            acc_search = search_accuracy(predict_proba, k)
         except ValueError:
             print("Похожих компаний нет в списке \n")
             continue
         print(f"\nТоп {k} похожих компаний:\n")
         
         for i, comp in enumerate(top_comp):
-            print(f"{i + 1}: {comp}; \t значение метрки: надо доделать!")
+            print(f"{i + 1}: {comp}")
         print("\n")
-        print(f"Время обработки запроса: {round(time_1, 4)} секунды")
+        print(f"Время обработки запроса: {round(time_1, 4)} секунды,\nКачество поиска: {round(acc_search, 3)}")
 
 
 if __name__ == "__main__":
