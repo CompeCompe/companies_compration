@@ -1,6 +1,7 @@
 from pathlib import Path
 from joblib import load
 import pickle
+import time
 
 import numpy as np
 import pandas as pd
@@ -58,13 +59,15 @@ def main():
         )
 
     while True:
-        comp_name = input("Введите Название компании для поиска или exit для выхода:\n\n").rstrip()
+        comp_name = input("\nВведите Название компании для поиска или exit для выхода:\n\n").rstrip()
         if comp_name == "exit":
             break
         k = 5
         
         try:
-            top_comp, predict_proba = rank(comp_name, k, full_df, data, logit, clear_via_pipe) 
+            start_time = time.time()
+            top_comp, predict_proba = rank(comp_name, k, full_df, data, logit, clear_via_pipe)
+            time_1 = time.time() - start_time 
         except ValueError:
             print("Похожих компаний нет в списке \n")
             continue
@@ -73,6 +76,7 @@ def main():
         for i, comp in enumerate(top_comp):
             print(f"{i + 1}: {comp}; \t значение метрки: надо доделать!")
         print("\n")
+        print(f"Время обработки запроса: {round(time_1, 4)} секунды")
 
 
 if __name__ == "__main__":
