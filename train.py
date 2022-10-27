@@ -31,13 +31,11 @@ features_train = count_tf_idf.fit_transform(corpus)
 target_train = data['is_duplicate'].values
 
 # model train
-logreg = LogisticRegression(solver='sag', max_iter=300, random_state=101)
-tuned_parameters = {"C": np.logspace(-2, 2, 10)}
-best_logreg = GridSearchCV(logreg, param_grid=tuned_parameters, scoring='roc_auc',
-                           cv=5, n_jobs=-1).fit(features_train, target_train)
+logreg = LogisticRegression(solver='sag', max_iter=300, C=0.05, n_jobs=-1, 
+                            random_state=101).fit(features_train, target_train)
 
 # save model and data
 full_df = data.copy()
 pickle.dump(count_tf_idf, open("data/tfidf.pickle", "wb"))
 full_df.to_hdf(Path(r"data/full_df.h5"), key="df", mode="w", index=False)
-dump(best_logreg, Path(r"data/logit.joblib", sep=";"))
+dump(logreg, Path(r"data/logit.joblib", sep=";"))
