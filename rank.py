@@ -38,10 +38,13 @@ def rank(comp_name: str, k: int, full_df, data, model, clear_via_pipe):
     count_tf_idf = pickle.load(open("data/tfidf.pickle", "rb"))
     features_train = count_tf_idf.transform(corpus)
     predict_proba = model.predict_proba(features_train)[:,1]
-    top_comp_index = predict_proba.argsort()
-    top_comp_index = top_comp_index[-k:]
-    top_comp_index = list(top_comp_index[::-1])
-    ans = data.iloc[top_comp_index]['name_1'].values.tolist()
+    if predict_proba.max() > 0.5:
+        top_comp_index = predict_proba.argsort()
+        top_comp_index = top_comp_index[-k:]
+        top_comp_index = list(top_comp_index[::-1])
+        ans = data.iloc[top_comp_index]['name_1'].values.tolist()
+    else:
+        ans = 0
     
     return ans, predict_proba
 
@@ -64,14 +67,16 @@ def main():
             break
         k = 5
         
-        try:
-            start_time = time.time()
-            top_comp, predict_proba = rank(comp_name, k, full_df, data, logit, clear_via_pipe)
-            time_1 = time.time() - start_time
-            acc_search = search_accuracy(predict_proba, k)
-        except ValueError:
+        start_time = time.time()
+        top_comp, predict_proba = rank(comp_name, k, full_df, data, logit, clear_via_pipe)
+        time_1 = time.time() - start_time
+        acc_search = search_accuracy(predict_proba, k)
+        
+        if top_comp == 0:
             print("Похожих компаний нет в списке \n")
+            print(f"Время обработки запроса: {round(time_1, 4)} секунды,\nКачество поиска: {round(acc_search, 3)}")
             continue
+        
         print(f"\nТоп {k} похожих компаний:\n")
         
         for i, comp in enumerate(top_comp):
