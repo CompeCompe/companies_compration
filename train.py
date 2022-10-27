@@ -28,7 +28,7 @@ data['full_name'] = data['name_1'] + ' ' + data['name_2']
 count_tf_idf = TfidfVectorizer(ngram_range=(1,5), analyzer='char_wb', max_features=10000)
 corpus = data['full_name'].values.astype('U')
 features_train = count_tf_idf.fit_transform(corpus)
-target_train = data['is_duplicate']
+target_train = data['is_duplicate'].values
 
 # model train
 logreg = LogisticRegression(solver='sag', max_iter=300, random_state=101)
